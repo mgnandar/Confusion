@@ -1,5 +1,14 @@
 import React from "react";
-import { Card, CardImg, CardText, CardBody, CardTitle } from "reactstrap";
+import {
+  Card,
+  CardImg,
+  CardText,
+  CardBody,
+  CardTitle,
+  Breadcrumb,
+  BreadcrumbItem,
+} from "reactstrap";
+import { Link } from "react-router-dom";
 
 function RenderComments({ commentsList }) {
   //I Can not use 'List' reactstrap
@@ -31,7 +40,15 @@ const DishdetailComponent = (props) => {
 
   return (
     <div className="container">
+        <Breadcrumb>
+          <BreadcrumbItem>
+            <Link to="/menu">Menu</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem active>{dish.name}</BreadcrumbItem>
+        </Breadcrumb>
       <div className="row">
+      
+
         <div className="col-12 col-md-5 m-1">
           <Card>
             <CardImg width="100%" src={dish.image} alt={dish.name} />
@@ -44,9 +61,7 @@ const DishdetailComponent = (props) => {
 
         <div className="col-12 col-md-5 m-1">
           <div className="row">
-            <RenderComments
-              commentsList={props.selectedDish.comments}
-            ></RenderComments>
+            <RenderComments commentsList={props.comments}></RenderComments>
           </div>
         </div>
       </div>
