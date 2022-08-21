@@ -14,11 +14,9 @@ import {
   Label,
   Row,
   Col,
-  
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Control, LocalForm, Errors } from "react-redux-form";
-
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
@@ -39,8 +37,13 @@ class CommentForm extends Component {
     });
   }
   handleSubmit(values) {
-    console.log("Current State is: " + JSON.stringify(values));
-    alert("Current State is: " + JSON.stringify(values));
+    this.toggleModal();
+    this.props.addComment(
+      this.props.dishId,
+      values.rating,
+      values.name,
+      values.comment
+    );
   }
   render() {
     return (
@@ -133,7 +136,7 @@ class CommentForm extends Component {
   }
 }
 
-function RenderComments({ commentsList }) {
+function RenderComments({ commentsList, addComment, dishId }) {
   //I Can not use 'List' reactstrap
   const comments = commentsList.map((comments) => {
     return (
@@ -154,7 +157,7 @@ function RenderComments({ commentsList }) {
     <div className="container">
       <h4>Comments</h4>
       {comments}
-      <CommentForm />
+      <CommentForm dishId={dishId} addComment={addComment} />
     </div>
   );
 }
@@ -183,7 +186,11 @@ const DishdetailComponent = (props) => {
 
         <div className="col-12 col-md-5 m-1">
           <div className="row">
-            <RenderComments commentsList={props.comments}></RenderComments>
+            <RenderComments
+              commentsList={props.comments}
+              addComment={props.addComment}
+              dishId={props.selectedDish.id}
+            ></RenderComments>
           </div>
         </div>
       </div>
