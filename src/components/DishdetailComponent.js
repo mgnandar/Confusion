@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import { Control, LocalForm, Errors } from "react-redux-form";
 import { Loading } from "./LoadingComponent";
 import { baseUrl } from "../shared/baseUrl";
+import { FadeTransform, Fade, Stagger } from "react-animation-components";
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
@@ -40,7 +41,7 @@ class CommentForm extends Component {
   }
   handleSubmit(values) {
     this.toggleModal();
-    this.props.addComment(
+    this.props.postComment(
       this.props.dishId,
       values.rating,
       values.name,
@@ -138,30 +139,64 @@ class CommentForm extends Component {
   }
 }
 
-function RenderComments({ commentsList, addComment, dishId }) {
+function RenderComments({ commentsList, postComment, dishId }) {
   //I Can not use 'List' reactstrap
-  const comments = commentsList.map((comments) => {
+  // const comments = commentsList.map((comments) => {
+  //   return (
+  //     <Stagger in>
+  //       <Fade in>
+  //         <div className="mb-4" key={comments.id}>
+  //           <div className="mb-2">{comments.comment}</div>
+  //           <div>
+  //             --{comments.author},{" "}
+  //             {new Intl.DateTimeFormat("en-US", {
+  //               year: "numeric",
+  //               month: "short",
+  //               day: "2-digit",
+  //             }).format(new Date(Date.parse(comments.date)))}
+  //           </div>
+  //         </div>
+  //       </Fade>
+  //     </Stagger>
+  //   );
+  // });
+
+  if (commentsList != null)
     return (
-      <div className="mb-4" key={comments.id}>
-        <div className="mb-2">{comments.comment}</div>
-        <div>
-          --{comments.author},{" "}
-          {new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-          }).format(new Date(Date.parse(comments.date)))}
-        </div>
+      <div className="col-12 m-1">
+        <h4>Comments</h4>
+        <ul className="list-unstyled">
+          <Stagger in>
+            {commentsList.map((comment) => {
+              return (
+                <Fade in>
+                  <li key={comment.id}>
+                    <p>{comment.comment}</p>
+                    <p>
+                      -- {comment.author} ,{" "}
+                      {new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "2-digit",
+                      }).format(new Date(Date.parse(comment.date)))}
+                    </p>
+                  </li>
+                </Fade>
+              );
+            })}
+          </Stagger>
+        </ul>
+        <CommentForm dishId={dishId} postComment={postComment} />
       </div>
     );
-  });
-  return (
-    <div className="container">
-      <h4>Comments</h4>
-      {comments}
-      <CommentForm dishId={dishId} addComment={addComment} />
-    </div>
-  );
+
+  // return (
+  //   <div className="container">
+  //     <h4>Comments</h4>
+  //     {comments}
+  //     <CommentForm dishId={dishId} postComment={postComment} />
+  //   </div>
+  // );
 }
 
 const DishdetailComponent = (props) => {
@@ -194,24 +229,31 @@ const DishdetailComponent = (props) => {
         </Breadcrumb>
         <div className="row">
           <div className="col-12 col-md-5 m-1">
-            <Card>
-              <CardImg
-                width="100%"
-                src={baseUrl + dish.image}
-                alt={dish.name}
-              />
-              <CardBody>
-                <CardTitle>{dish.name}</CardTitle>
-                <CardText>{dish.description}</CardText>
-              </CardBody>
-            </Card>
+            <FadeTransform
+              in
+              transformProps={{
+                exitTransform: "scale(0.5) translateY(-50%)",
+              }}
+            >
+              <Card>
+                <CardImg
+                  width="100%"
+                  src={baseUrl + dish.image}
+                  alt={dish.name}
+                />
+                <CardBody>
+                  <CardTitle>{dish.name}</CardTitle>
+                  <CardText>{dish.description}</CardText>
+                </CardBody>
+              </Card>
+            </FadeTransform>
           </div>
 
           <div className="col-12 col-md-5 m-1">
             <div className="row">
               <RenderComments
                 commentsList={props.comments}
-                addComment={props.addComment}
+                postComment={props.postComment}
                 dishId={props.selectedDish.id}
               ></RenderComments>
             </div>

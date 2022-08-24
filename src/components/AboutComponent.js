@@ -13,40 +13,58 @@ import {
   CardSubtitle,
 } from "reactstrap";
 import { Link } from "react-router-dom";
+import { Loading } from "./LoadingComponent";
+import { baseUrl } from "../shared/baseUrl";
+import { Fade, Stagger } from "react-animation-components";
 
 function About(props) {
-  const leaders = props.leaders.map((leader) => {
-    return (
-      <div key={leader.id} className="m-1">
-        <RenderLeader leader={leader}></RenderLeader>
-      </div>
-    );
-  });
+  // const leaders = props.leaders.map((leader) => {
+  //   return (
+  //     <div key={leader.id} className="m-1">
+  //       <RenderLeader
+  //         leader={leader}
+  //         isLoading={props.leadersLoading}
+  //         errMess={props.leadersErrMess}
+  //       ></RenderLeader>
+  //     </div>
+  //   );
+  // });
 
-  function RenderLeader({ leader }) {
-    return (
-      <Media list>
-      <div className="row">
-        <div className="col-1">
-          <CardImg className="mt-3"
-            width="220px"
-            height="70px"
-            src={leader.image}
-            alt={leader.name}
-          />
-        </div>
-        <div className="col-11">
-          <CardBody>
-            <CardTitle className="mb-3"><h3>{leader.name}</h3></CardTitle>
-            {leader.designation ? (
-              <CardSubtitle className="mb-3">{leader.designation}</CardSubtitle>
-            ) : null}
-            <CardText>{leader.description}</CardText>
-          </CardBody>
-        </div>
-      </div>
-      </Media>
-    );
+  function RenderLeader({ leader, isLoading, errMess }) {
+    if (isLoading) {
+      return <Loading />;
+    } else if (errMess) {
+      return <h4>{errMess}</h4>;
+    } else {
+      return (
+        <Media list>
+          <div className="row">
+            <div className="col-1">
+              <CardImg
+                className="mt-3"
+                width="220px"
+                height="70px"
+                src={baseUrl + leader.image}
+                alt={leader.name}
+              />
+            </div>
+            <div className="col-11">
+              <CardBody>
+                <CardTitle className="mb-3">
+                  <h3>{leader.name}</h3>
+                </CardTitle>
+                {leader.designation ? (
+                  <CardSubtitle className="mb-3">
+                    {leader.designation}
+                  </CardSubtitle>
+                ) : null}
+                <CardText>{leader.description}</CardText>
+              </CardBody>
+            </div>
+          </div>
+        </Media>
+      );
+    }
   }
 
   return (
@@ -124,9 +142,18 @@ function About(props) {
         <div className="col-12">
           <h2>Corporate Leadership</h2>
         </div>
-        <div>
-         {leaders}
-        </div>
+        {/* <div>{leaders}</div> */}
+        <ul className="list-unstyled">
+          <Stagger in>
+            {props.leaders.map((leader) => {
+              return (
+                <Fade in>
+                  <RenderLeader leader={leader} />
+                </Fade>
+              );
+            })}
+          </Stagger>
+        </ul>
       </div>
     </div>
   );
